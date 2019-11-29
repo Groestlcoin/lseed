@@ -23,13 +23,15 @@ type DnsServer struct {
 	netview    *NetworkView
 	listenAddr string
 	rootDomain string
+	proto      string
 }
 
-func NewDnsServer(netview *NetworkView, listenAddr, rootDomain string) *DnsServer {
+func NewDnsServer(netview *NetworkView, listenAddr, rootDomain, proto string) *DnsServer {
 	return &DnsServer{
 		netview:    netview,
 		listenAddr: listenAddr,
 		rootDomain: rootDomain,
+		proto:      proto,
 	}
 }
 
@@ -241,8 +243,8 @@ func (ds *DnsServer) handleLightningDns(w dns.ResponseWriter, r *dns.Msg) {
 
 func (ds *DnsServer) Serve() {
 	dns.HandleFunc(ds.rootDomain, ds.handleLightningDns)
-	server := &dns.Server{Addr: ds.listenAddr, Net: "udp"}
+	server := &dns.Server{Addr: ds.listenAddr, Net: ds.proto}
 	if err := server.ListenAndServe(); err != nil {
-		log.Errorf("Failed to setup the udp server: %s\n", err.Error())
+		log.Errorf("Failed to setup the server: %s\n", err.Error())
 	}
 }
