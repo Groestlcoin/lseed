@@ -8,8 +8,8 @@ import (
 
 	"github.com/cdecker/lseed/lightningrpc"
 
-	log "github.com/Sirupsen/logrus"
 	"github.com/cdecker/lseed/seed"
+	log "github.com/sirupsen/logrus"
 )
 
 var (

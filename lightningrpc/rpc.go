@@ -6,7 +6,7 @@ import (
 
 	"github.com/pkg/errors"
 	"github.com/powerman/rpc-codec/jsonrpc2"
-	log "github.com/Sirupsen/logrus"
+	log "github.com/sirupsen/logrus"
 )
 
 type LightningRpc struct {

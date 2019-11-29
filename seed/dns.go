@@ -13,10 +13,10 @@ import (
 	"strconv"
 	"strings"
 
-	log "github.com/Sirupsen/logrus"
 	"github.com/adiabat/bech32"
 	"github.com/btcsuite/btcd/btcec"
 	"github.com/miekg/dns"
+	log "github.com/sirupsen/logrus"
 )
 
 type DnsServer struct {
