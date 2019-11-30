@@ -10,6 +10,7 @@ package seed
 import (
 	"encoding/hex"
 	"fmt"
+	"net"
 	"strconv"
 	"strings"
 
@@ -24,14 +25,16 @@ type DnsServer struct {
 	listenAddr string
 	rootDomain string
 	proto      string
+	soa        net.IP
 }
 
-func NewDnsServer(netview *NetworkView, listenAddr, rootDomain, proto string) *DnsServer {
+func NewDnsServer(netview *NetworkView, listenAddr, rootDomain, proto string, soa string) *DnsServer {
 	return &DnsServer{
 		netview:    netview,
 		listenAddr: listenAddr,
 		rootDomain: rootDomain,
 		proto:      proto,
+		soa:        net.ParseIP(soa).To4(),
 	}
 }
 
@@ -209,8 +212,19 @@ func (ds *DnsServer) handleLightningDns(w dns.ResponseWriter, r *dns.Msg) {
 	m := new(dns.Msg)
 	m.SetReply(r)
 
-	// Is this a wildcard query?
-	if req.node_id == "" {
+	if req.subdomain == "soa." && req.qtype == dns.TypeA && ds.soa != nil {
+		header := dns.RR_Header{
+			Rrtype: dns.TypeA,
+			Class:  dns.ClassINET,
+			Ttl:    60,
+			Name:   r.Question[0].Name,
+		}
+		rr := &dns.A{
+			Hdr: header,
+			A:   ds.soa,
+		}
+		m.Answer = append(m.Answer, rr)
+	} else if req.node_id == "" { // Is this a wildcard query?
 		switch req.qtype {
 		case dns.TypeAAAA:
 			ds.handleAAAAQuery(r, m)

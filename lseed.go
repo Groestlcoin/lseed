@@ -22,6 +22,7 @@ var (
 	debug         = flag.Bool("debug", false, "Be very verbose")
 	numResults    = flag.Int("results", 25, "How many results shall we return to a query?")
 	proto         = flag.String("proto", "udp", "Should we use udp or tcp")
+	soa           = flag.String("soa", "", "External IP of this server served as \"soa.\" A-record")
 )
 
 // Expand variables in paths such as $HOME
@@ -77,7 +78,7 @@ func main() {
 	lightningRpc = lightningrpc.NewLightningRpc(*lightningSock)
 
 	nview := seed.NewNetworkView()
-	dnsServer := seed.NewDnsServer(nview, *listenAddr, *rootDomain, *proto)
+	dnsServer := seed.NewDnsServer(nview, *listenAddr, *rootDomain, *proto, *soa)
 
 	go poller(lightningRpc, nview)
 	dnsServer.Serve()
